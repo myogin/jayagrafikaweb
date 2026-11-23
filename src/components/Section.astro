@@ -1,0 +1,19 @@
+---
+interface Props {
+  judul: string;
+  aksen?: "cyan" | "magenta" | "yellow";
+  id?: string;
+}
+const { judul, aksen = "cyan", id } = Astro.props;
+const warna = { cyan: "bg-cyan", magenta: "bg-magenta", yellow: "bg-yellow" }[aksen];
+---
+
+<section id={id} class="rounded-xl border border-line bg-surface p-4 sm:p-5">
+  <h2 class="mb-4 flex items-center gap-2 text-[13px] font-semibold tracking-wider text-muted uppercase">
+    <span class:list={["h-3.5 w-1 rounded-full", warna]} aria-hidden="true"></span>
+    {judul}
+  </h2>
+  <div class="grid grid-cols-2 gap-x-3 gap-y-4">
+    <slot />
+  </div>
+</section>

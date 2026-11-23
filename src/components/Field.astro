@@ -1,0 +1,35 @@
+---
+interface Props {
+  name: string;
+  label: string;
+  satuan?: string;
+  placeholder?: string;
+  hint?: string;
+  value?: string;
+  lebar?: boolean;
+  teks?: boolean; // input teks bebas, bukan angka
+}
+const { name, label, satuan, placeholder, hint, value, lebar = false, teks = false } = Astro.props;
+const id = `f-${name.replace(".", "-")}`;
+---
+
+<div class:list={["flex flex-col gap-1.5", lebar && "col-span-2"]}>
+  <label for={id} class="text-sm font-medium text-ink">
+    {label}{satuan && <span class="font-normal text-muted"> ({satuan})</span>}
+  </label>
+  <input
+    id={id}
+    name={name}
+    type="text"
+    value={value}
+    placeholder={placeholder}
+    inputmode={teks ? "text" : "decimal"}
+    autocomplete="off"
+    aria-describedby={hint !== undefined ? `${id}-hint` : undefined}
+    class:list={[
+      "min-h-11 w-full rounded-lg border border-line bg-white px-3 text-base text-ink transition-colors duration-150 placeholder:text-slate-400 hover:border-slate-400 focus:border-brand focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan/40",
+      !teks && "font-mono tabular-nums",
+    ]}
+  />
+  {hint !== undefined && <span id={`${id}-hint`} data-hint={name} class="text-xs leading-snug text-muted">{hint}</span>}
+</div>

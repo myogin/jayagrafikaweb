@@ -1,0 +1,62 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const kontak = [
+  { label: "Alamat", nilai: "Jl. Kapten Japa No. 46, Dangin Puri Klod, Denpasar Timur, Bali 80232" },
+  { label: "Jam buka", nilai: "Senin–Jumat 09.00–17.00 · Sabtu 09.00–16.00" },
+];
+const wa = [
+  { teks: "+62 851-0280-2003", href: "https://wa.me/6285102802003" },
+  { teks: "+62 851-2695-2925", href: "https://wa.me/6285126952925" },
+];
+---
+
+<Layout title="Jaya Grafika Bali — Segera Hadir">
+  <main class="flex min-h-dvh flex-col bg-brand text-white">
+    <div class="cmyk-bar h-1.5 w-full" aria-hidden="true"></div>
+    <div class="mx-auto flex w-full max-w-xl flex-1 flex-col items-center justify-center px-4 py-12 text-center">
+      <img src="/logo-navy.jpg" alt="Jaya Grafika" width="640" height="640" class="h-auto w-56 sm:w-64" />
+      <p class="mt-2 text-xs font-medium tracking-[0.25em] text-white/60 uppercase">Offset printing &amp; custom packaging · sejak 2006</p>
+      <h1 class="mt-8 text-3xl font-semibold sm:text-4xl">Website segera hadir</h1>
+      <p class="mt-3 text-white/75">
+        Sementara itu, hubungi kami lewat WhatsApp, Instagram, atau email untuk penawaran harga.
+      </p>
+
+      <div class="mt-8 flex w-full flex-col gap-3 sm:flex-row sm:justify-center">
+        {
+          wa.map((w) => (
+            <a
+              href={w.href}
+              target="_blank"
+              rel="noopener"
+              class="inline-flex min-h-11 items-center justify-center rounded-lg bg-white px-5 font-medium text-brand transition-colors duration-200 hover:bg-brand-50"
+            >
+              WhatsApp {w.teks}
+            </a>
+          ))
+        }
+      </div>
+
+      <dl class="mt-10 grid w-full gap-4 border-t border-white/15 pt-8 text-left text-sm sm:grid-cols-2">
+        {
+          kontak.map((k) => (
+            <div>
+              <dt class="text-white/55">{k.label}</dt>
+              <dd class="mt-0.5">{k.nilai}</dd>
+            </div>
+          ))
+        }
+        <div>
+          <dt class="text-white/55">Email</dt>
+          <dd class="mt-0.5"><a href="mailto:jayagrafika579@gmail.com" class="underline-offset-4 hover:underline">jayagrafika579@gmail.com</a></dd>
+        </div>
+        <div>
+          <dt class="text-white/55">Instagram</dt>
+          <dd class="mt-0.5">
+            <a href="https://instagram.com/jayagrafikabali" target="_blank" rel="noopener" class="underline-offset-4 hover:underline">@jayagrafikabali</a>
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </main>
+</Layout>

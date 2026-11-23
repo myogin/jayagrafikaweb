@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+/* Token warna diturunkan dari logo Jaya Grafika: navy + tinta CMYK. */
+@theme {
+  --color-brand: #03253e;
+  --color-brand-600: #0b3a5e;
+  --color-brand-50: #eef3f8;
+  --color-ink: #0f172a;
+  --color-muted: #52606f;
+  --color-line: #dde3ea;
+  --color-surface: #ffffff;
+  --color-canvas: #f4f6f9;
+  --color-cyan: #00a3e0;
+  --color-magenta: #e6007e;
+  --color-yellow: #ffd400;
+  --color-warn-bg: #fff7e6;
+  --color-warn-line: #f5c26b;
+  --color-warn-ink: #7a4a00;
+
+  --font-sans: "Fira Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Fira Code", ui-monospace, monospace;
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+  body {
+    @apply bg-canvas text-ink font-sans antialiased;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-cyan);
+    outline-offset: 2px;
+  }
+}
+
+@utility cmyk-bar {
+  background: linear-gradient(90deg, var(--color-cyan), var(--color-magenta) 50%, var(--color-yellow));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 15mm;
+  }
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+}

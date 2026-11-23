@@ -1,0 +1,25 @@
+---
+/** Segmented control berbasis radio untuk pilihan singkat. */
+interface Props {
+  name: string;
+  label: string;
+  opsi: { value: string; label: string }[];
+  value: string;
+  lebar?: boolean;
+}
+const { name, label, opsi, value, lebar = false } = Astro.props;
+---
+
+<fieldset class:list={["flex flex-col gap-1.5", lebar && "col-span-2"]}>
+  <legend class="mb-1.5 text-sm font-medium text-ink">{label}</legend>
+  <div class="flex rounded-lg border border-line bg-canvas p-1">
+    {
+      opsi.map((o) => (
+        <label class="flex min-h-9 flex-1 cursor-pointer items-center justify-center rounded-md px-2 text-sm text-muted transition-colors duration-150 hover:text-ink has-checked:bg-brand has-checked:font-medium has-checked:text-white has-focus-visible:ring-2 has-focus-visible:ring-cyan">
+          <input type="radio" name={name} value={o.value} checked={o.value === value} class="sr-only" />
+          {o.label}
+        </label>
+      ))
+    }
+  </div>
+</fieldset>

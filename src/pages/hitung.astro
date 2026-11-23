@@ -1,0 +1,162 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Section from "../components/Section.astro";
+import Field from "../components/Field.astro";
+import Select from "../components/Select.astro";
+import Pilihan from "../components/Pilihan.astro";
+import Toggle from "../components/Toggle.astro";
+import { angka } from "../lib/calc/format";
+import { JENIS_CETAK, LAMINASI, PLAT, PRESET_PLANO, type JenisCetak, type JenisLaminasi, type UkuranPlat } from "../lib/calc/presets";
+import { FORM_AWAL } from "../lib/calc/state";
+
+const f = FORM_AWAL;
+const opsiPlat = (Object.keys(PLAT) as UkuranPlat[]).map((u) => ({ value: u, label: `${u} · Rp ${angka(PLAT[u].harga)}` }));
+const opsiCetak = (Object.keys(JENIS_CETAK) as JenisCetak[]).map((j) => ({ value: j, label: JENIS_CETAK[j].label }));
+const opsiLaminasi = (Object.keys(LAMINASI) as JenisLaminasi[]).map((l) => ({ value: l, label: LAMINASI[l].label }));
+const addOnLain = [
+  { key: "kertasAlas", label: "Kertas alas", note: true },
+  { key: "kertasKuping", label: "Kertas kuping", note: true },
+  { key: "lem", label: "Lem", note: false },
+] as const;
+
+const btnSekunder =
+  "inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-lg border border-line bg-white px-4 text-sm font-medium text-ink transition-colors duration-150 hover:bg-canvas";
+const btnUtama =
+  "inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-lg bg-brand px-4 text-sm font-medium text-white transition-colors duration-150 hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-40";
+---
+
+<Layout title="Kalkulator HPP Cetak · Jaya Grafika" description="Kalkulator harga pokok produksi cetak offset Jaya Grafika." noindex>
+  <div class="print:hidden">
+    <div class="cmyk-bar h-1 w-full" aria-hidden="true"></div>
+    <header class="border-b border-line bg-white">
+      <div class="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
+        <div class="flex min-w-0 items-center gap-3">
+          <img src="/logo-jayagrafika.png" alt="Jaya Grafika" width="450" height="372" class="h-10 w-auto shrink-0" />
+          <div class="min-w-0 border-l border-line pl-3">
+            <h1 class="truncate text-base font-semibold leading-tight sm:text-lg"><span class="hidden sm:inline">Kalkulator </span>HPP Cetak</h1>
+            <p class="hidden text-xs text-muted sm:block">Hasil dihitung ulang setiap input berubah.</p>
+          </div>
+        </div>
+        <div class="flex shrink-0 gap-2">
+          <button type="reset" form="form-hpp" class={btnSekunder} aria-label="Reset form">
+            <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+            <span class="hidden sm:inline">Reset</span>
+          </button>
+          <button type="button" id="btn-pdf" class={btnUtama} disabled>
+            <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+            <span><span class="hidden sm:inline">Download / </span>Cetak PDF</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="mx-auto w-full max-w-6xl px-4 pt-5 pb-28 lg:pb-10">
+      <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_400px]">
+        <form id="form-hpp" class="flex flex-col gap-4" autocomplete="off" novalidate>
+          <Section judul="Order" aksen="cyan">
+            <Field name="jenisCetakan" label="Jenis cetakan" placeholder="Paperbag / brosur / box" teks lebar />
+            <Field name="qtyOrder" label="Quantity order" satuan="pcs" placeholder="5.000" hint="Dipakai untuk HPP per pcs." lebar />
+          </Section>
+
+          <Section judul="Kertas" aksen="magenta">
+            <Field name="jenisKertas" label="Jenis kertas" placeholder="Art paper" teks />
+            <Field name="gramatur" label="Gramatur" satuan="gsm" placeholder="150" />
+            <Field name="hargaKertas" label="Harga kertas per plano" satuan="Rp" placeholder="3.500" hint="Masukkan harga terbaru." lebar />
+          </Section>
+
+          <Section judul="Ukuran & plano" aksen="yellow">
+            <div class="col-span-2 flex flex-wrap gap-2" role="group" aria-label="Preset ukuran plano">
+              {
+                PRESET_PLANO.map(({ p, l }) => (
+                  <button
+                    type="button"
+                    data-plano={`${p}x${l}`}
+                    aria-pressed="false"
+                    class="min-h-9 cursor-pointer rounded-full border border-line px-3.5 font-mono text-sm text-ink transition-colors duration-150 hover:border-brand aria-pressed:border-brand aria-pressed:bg-brand aria-pressed:text-white"
+                  >
+                    {p}×{l}
+                  </button>
+                ))
+              }
+            </div>
+            <Field name="planoP" label="Plano P" satuan="cm" value={f.planoP} />
+            <Field name="planoL" label="Plano L" satuan="cm" value={f.planoL} />
+            <Field name="cetakP" label="Kertas cetak P" satuan="cm" placeholder="36" />
+            <Field name="cetakL" label="Kertas cetak L" satuan="cm" placeholder="26" />
+            <Field name="isiPlanoManual" label="Isi per plano" placeholder="Auto" hint="Kosongkan untuk hitung otomatis." lebar />
+            <Field name="jumlah" label="Jumlah kertas cetak" placeholder="20.000" />
+            <Field name="layout" label="Plat / layout 1/…" placeholder="Opsional, mis. 4" hint="Contoh 4 → jumlah / 4 / isi plano" />
+          </Section>
+
+          <Section judul="Plat" aksen="cyan">
+            <Select name="ukuranPlat" label="Ukuran plat" opsi={opsiPlat} value={f.ukuranPlat} lebar />
+            <Field name="hargaPlat" label="Harga plat" satuan="Rp" placeholder={angka(PLAT[f.ukuranPlat].harga)} />
+            <Field name="jumlahPlatManual" label="Jumlah plat" placeholder="Auto" />
+          </Section>
+
+          <Section judul="Ongkos cetak" aksen="magenta">
+            <Pilihan name="mesin" label="Jenis mesin" value={f.mesin} opsi={[{ value: "52", label: "52" }, { value: "58", label: "58" }]} lebar />
+            <p class="col-span-2 -mt-2 text-xs text-muted">Ukuran plat otomatis mengikuti mesin.</p>
+            <Select name="jenisCetak" label="Jenis cetak" opsi={opsiCetak} value={f.jenisCetak} lebar />
+            <Field name="ongkosCetak" label="Harga ongkos cetak" satuan="Rp" placeholder="0" lebar />
+          </Section>
+
+          <Section judul="Laminasi" aksen="yellow">
+            <Pilihan name="laminasi" label="Jenis" value={f.laminasi} opsi={opsiLaminasi} lebar />
+            <div data-laminasi-detail hidden class="col-span-2 grid grid-cols-2 gap-x-3 gap-y-4">
+              <Field name="tarifLaminasi" label="Tarif" satuan="Rp/cm²" placeholder="0,22" />
+              <Pilihan name="sisiLaminasi" label="Sisi" value="1" opsi={[{ value: "1", label: "1 sisi" }, { value: "2", label: "2 sisi" }]} />
+            </div>
+          </Section>
+
+          <Section judul="Pisau, plong, potong & finishing" aksen="cyan">
+            <Field name="pisau" label="Pisau" satuan="Rp" placeholder="0" />
+            <Field name="plong" label="Plong" satuan="Rp" placeholder="0" />
+            <Field name="jasaPotong" label="Jasa potong" satuan="Rp" placeholder="0" />
+            <Field name="finishing" label="Finishing" satuan="Rp" placeholder="0" />
+          </Section>
+
+          <Section judul="Add-on (opsional)" aksen="magenta">
+            <Toggle name="tali.aktif" label="Tali paperbag" />
+            <div data-addon="tali" hidden class="col-span-2 -mt-2 grid grid-cols-2 gap-x-3 gap-y-4 border-l-2 border-line pl-3">
+              <Field name="taliJenis" label="Jenis tali" placeholder="Kur / katun / pita" teks lebar />
+              <Field name="tali.harga" label="Harga tali" satuan="Rp/pcs" />
+              <Field name="tali.qty" label="Qty" placeholder="Auto" hint="" />
+              <Field name="tali.catatan" label="Note" placeholder="Warna, panjang, dll." teks lebar />
+            </div>
+            {
+              addOnLain.map((a) => (
+                <>
+                  <Toggle name={`${a.key}.aktif`} label={a.label} />
+                  <div data-addon={a.key} hidden class="col-span-2 -mt-2 grid grid-cols-2 gap-x-3 gap-y-4 border-l-2 border-line pl-3">
+                    <Field name={`${a.key}.harga`} label={`Harga ${a.label.toLowerCase()}`} satuan="Rp/pcs" />
+                    <Field name={`${a.key}.qty`} label="Qty" placeholder="Auto" hint="" />
+                    {a.note && <Field name={`${a.key}.catatan`} label="Note" placeholder="Bahan, ukuran, dll." teks lebar />}
+                  </div>
+                </>
+              ))
+            }
+          </Section>
+        </form>
+
+        <aside id="hasil" class="scroll-mt-4 lg:sticky lg:top-5 lg:self-start" aria-live="polite"></aside>
+      </div>
+    </main>
+
+    <a
+      href="#hasil"
+      id="bar-total"
+      class="fixed inset-x-0 bottom-0 z-10 flex items-center justify-between gap-3 bg-brand px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] text-white shadow-[0_-4px_16px_rgba(3,37,62,0.25)] lg:hidden"
+    >
+      <span class="text-sm text-white/75" data-bar-label>Lengkapi input</span>
+      <span class="font-mono text-lg font-semibold tabular-nums" data-bar-nilai>–</span>
+    </a>
+  </div>
+
+  <div id="cetak" class="hidden text-[10pt] leading-snug text-black print:block"></div>
+</Layout>
+
+<script>
+  import { mulai } from "../lib/calc/ui";
+  mulai();
+</script>

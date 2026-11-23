@@ -1,0 +1,22 @@
+---
+interface Props {
+  name: string;
+  label: string;
+  opsi: { value: string; label: string }[];
+  value?: string;
+  lebar?: boolean;
+}
+const { name, label, opsi, value, lebar = false } = Astro.props;
+const id = `f-${name}`;
+---
+
+<div class:list={["flex flex-col gap-1.5", lebar && "col-span-2"]}>
+  <label for={id} class="text-sm font-medium text-ink">{label}</label>
+  <select
+    id={id}
+    name={name}
+    class="min-h-11 w-full cursor-pointer rounded-lg border border-line bg-white px-3 text-base text-ink transition-colors duration-150 hover:border-slate-400 focus:border-brand focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan/40"
+  >
+    {opsi.map((o) => <option value={o.value} selected={o.value === value}>{o.label}</option>)}
+  </select>
+</div>
