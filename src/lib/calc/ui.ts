@@ -2,6 +2,7 @@ import { angka, parseAngka, rupiah } from "./format";
 import { hitungHpp, type HppInput, type HppResult } from "./hpp";
 import { JENIS_CETAK, LAMINASI, PLAT, type JenisCetak, type JenisLaminasi, type Mesin, type Sisi, type UkuranPlat } from "./presets";
 import { type AddOnForm, type FormState, toInput } from "./state";
+import { hapusSimpanan, pulihkanForm, simpanForm } from "./simpan";
 
 type AddOnKey = "tali" | "kertasAlas" | "kertasKuping" | "lem";
 const ADDON: AddOnKey[] = ["tali", "kertasAlas", "kertasKuping", "lem"];
@@ -303,6 +304,8 @@ export function mulai() {
   const barLabel = document.querySelector<HTMLElement>("[data-bar-label]")!;
   const barNilai = document.querySelector<HTMLElement>("[data-bar-nilai]")!;
 
+  pulihkanForm(form);
+
   let state = bacaForm(form);
   let input = toInput(state);
   let hasil = hitungHpp(input);
@@ -318,6 +321,7 @@ export function mulai() {
     btnPdf.disabled = !siap;
     barLabel.textContent = siap ? "Total HPP · lihat rincian ↓" : "Lengkapi input · lihat ↓";
     barNilai.textContent = siap ? rupiah(hasil.total) : "–";
+    simpanForm(form);
   };
 
   form.addEventListener("input", render);
@@ -327,7 +331,14 @@ export function mulai() {
     if (t.name === "mesin") (form.elements.namedItem("ukuranPlat") as HTMLSelectElement).value = t.value;
     render();
   });
-  form.addEventListener("reset", () => setTimeout(render));
+  form.addEventListener("reset", (e) => {
+    if (!confirm("Yakin reset? Semua isian akan dikosongkan.")) {
+      e.preventDefault();
+      return;
+    }
+    hapusSimpanan();
+    setTimeout(render);
+  });
 
   form.addEventListener("click", (e) => {
     const b = (e.target as HTMLElement).closest<HTMLButtonElement>("[data-plano]");

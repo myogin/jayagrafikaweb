@@ -156,6 +156,14 @@ const btnUtama =
   <div id="cetak" class="hidden text-[10pt] leading-snug text-black print:block"></div>
 </Layout>
 
+<style is:global>
+  /* Cegah pull-to-refresh tak sengaja saat scroll form panjang di HP. */
+  html,
+  body {
+    overscroll-behavior-y: contain;
+  }
+</style>
+
 <script>
   import { mulai } from "../lib/calc/ui";
   mulai();
